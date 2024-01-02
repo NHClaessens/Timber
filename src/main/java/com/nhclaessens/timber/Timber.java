@@ -83,6 +83,8 @@ public class Timber implements ModInitializer {
 
 		JsonArray validNames = CONFIG.getOrDefaultJsonArray("names", new JsonArray());
 
+		if(validNames.isEmpty()) return true;
+
 		for(JsonElement element : validNames) {
 			if(element.toString().replace("\"", "").equals(name)) return true;
 		}
@@ -95,6 +97,8 @@ public class Timber implements ModInitializer {
 
 		JsonArray validItems = CONFIG.getOrDefaultJsonArray("items", new JsonArray());
 
+		if(validItems.isEmpty()) return true;
+
 		for(JsonElement element : validItems) {
 			if(("item.minecraft." + element.toString().replace("\"", "")).equals(name)) return true;
 		}
@@ -105,9 +109,11 @@ public class Timber implements ModInitializer {
 	private boolean validBlock(BlockState block) {
 		String name = block.getBlock().getTranslationKey();
 
-		JsonArray validItems = CONFIG.getOrDefaultJsonArray("blocks", new JsonArray());
+		JsonArray validBlocks = CONFIG.getOrDefaultJsonArray("blocks", new JsonArray());
 
-		for(JsonElement element : validItems) {
+		if(validBlocks.isEmpty()) return true;
+
+		for(JsonElement element : validBlocks) {
 			if(("block.minecraft." + element.toString().replace("\"", "")).equals(name)) return true;
 		}
 
