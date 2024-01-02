@@ -62,20 +62,42 @@ public class Timber implements ModInitializer {
 					pos.north(), pos.south(), pos.east(), pos.west(), pos.up(), pos.down()
 			};
 
-			for (BlockPos adjacentPos : adjacentPositions) {
-				BlockState adjacentBlockState = world.getBlockState(adjacentPos);
+			int blocks_broken = breakAdjacentBlocksInAllDirections(world, pos, state, MAX_BLOCKS);
 
-				// Check if the adjacent block is of the same type
-				if (adjacentBlockState.getBlock() == state.getBlock()) {
-					// Perform the desired action with the adjacent block
-					// For example, you can modify the adjacent block state
-					int blocks_broken = breakAdjacentBlocksInAllDirections(world, pos, state, MAX_BLOCKS);
+			HungerManager manager = player.getHungerManager();
+			manager.setFoodLevel(manager.getFoodLevel() - (int) Math.floor(blocks_broken * HUNGER));
+		}
+	}
 
-					HungerManager manager = player.getHungerManager();
-					manager.setFoodLevel(manager.getFoodLevel() - (int) Math.floor(blocks_broken * HUNGER));
-				}
+	// Recursive function to break adjacent blocks in all directions with a maximum count
+	private int breakAdjacentBlocksInAllDirections(World world, BlockPos pos, BlockState targetBlock, int maxBlocksToBreak) {
+		if (maxBlocksToBreak <= 0) {
+			return 0;  // Stop breaking blocks if the maximum count is reached
+		}
+
+		int blocksBroken = 0;
+
+		// Define all directions for adjacent positions
+		BlockPos[] neighbours = getNeighbours(pos);
+
+		for (BlockPos adjacentPos : neighbours) {
+			if (blocksBroken >= maxBlocksToBreak) {
+				break;  // Stop if the maximum count is reached
+			}
+
+			BlockState adjacentBlockState = world.getBlockState(adjacentPos);
+			LOGGER.info(String.valueOf(adjacentBlockState.getBlock()));
+			if (adjacentBlockState.getBlock() == targetBlock.getBlock()) {
+				// Break the block at the adjacent position
+				world.breakBlock(adjacentPos, true);
+				blocksBroken++;
+
+				// Recursively search for adjacent blocks in the current direction
+				blocksBroken += breakAdjacentBlocksInAllDirections(world, adjacentPos, targetBlock, maxBlocksToBreak - blocksBroken);
 			}
 		}
+
+		return blocksBroken;
 	}
 
 	private boolean validName(ItemStack tool) {
@@ -137,36 +159,5 @@ public class Timber implements ModInitializer {
 		}
 
 		return neighborPositions;
-	}
-
-	// Recursive function to break adjacent blocks in all directions with a maximum count
-	private int breakAdjacentBlocksInAllDirections(World world, BlockPos pos, BlockState targetBlock, int maxBlocksToBreak) {
-		if (maxBlocksToBreak <= 0) {
-			return 0;  // Stop breaking blocks if the maximum count is reached
-		}
-
-		int blocksBroken = 0;
-
-		// Define all directions for adjacent positions
-		BlockPos[] neighbours = getNeighbours(pos);
-
-		for (BlockPos adjacentPos : neighbours) {
-			if (blocksBroken >= maxBlocksToBreak) {
-				break;  // Stop if the maximum count is reached
-			}
-
-			BlockState adjacentBlockState = world.getBlockState(adjacentPos);
-
-			if (adjacentBlockState.getBlock() == targetBlock.getBlock()) {
-				// Break the block at the adjacent position
-				world.breakBlock(adjacentPos, true);
-				blocksBroken++;
-
-				// Recursively search for adjacent blocks in the current direction
-				blocksBroken += breakAdjacentBlocksInAllDirections(world, adjacentPos, targetBlock, maxBlocksToBreak - blocksBroken);
-			}
-		}
-
-		return blocksBroken;
 	}
 }
