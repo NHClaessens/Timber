@@ -3,13 +3,13 @@
 	"id": "timber",
 	"version": "${version}",
 	"name": "Timber",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A timber mod for minecraft 1.20.4",
 	"authors": [
-		"Me!"
+		"NHClaessens"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/NHClaessens/Timber",
+		"sources": "https://github.com/NHClaessens/Timber"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/timber/icon.png",
